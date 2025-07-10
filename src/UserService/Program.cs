@@ -17,6 +17,8 @@ builder.Services.AddMetricServer(opt =>
 });
 builder.Services.AddHealthChecks(); // domyœlnie endpoint /healthz
 
+builder.Services.AddAutoMapper(typeof(Program));
+
 //EF Core
 builder.Services.AddDbContext<UserDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
