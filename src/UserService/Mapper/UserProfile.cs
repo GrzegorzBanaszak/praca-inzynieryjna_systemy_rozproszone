@@ -1,4 +1,6 @@
 ﻿using AutoMapper;
+using UserService.Dtos;
+using UserService.Models;
 
 namespace UserService.Mapper
 {
@@ -6,7 +8,7 @@ namespace UserService.Mapper
     {
         public UserProfile()
         {
-
+            CreateMap<User, UserDto>(); // Map User to UserDto>
 
         }
     }

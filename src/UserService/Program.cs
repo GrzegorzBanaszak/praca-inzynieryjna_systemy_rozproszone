@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using Prometheus;
 using System.Text;
 using UserService.Data;
@@ -15,7 +16,7 @@ builder.Services.AddMetricServer(opt =>
     opt.Port = 9090; // Port for Prometheus metrics
 
 });
-builder.Services.AddHealthChecks(); // domy�lnie endpoint /healthz
+builder.Services.AddHealthChecks(); // domy�lnie endpoint /healthz
 
 builder.Services.AddAutoMapper(typeof(Program));
 
@@ -28,6 +29,7 @@ builder.Services.Configure<JwtSettings>(builder.Configuration.GetSection("JwtSet
 
 // Services
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IUserService, UserServices>();
 
 // Authentication
 var jwt = builder.Configuration.GetSection("JwtSettings").Get<JwtSettings>();
@@ -53,7 +55,38 @@ AddJwtBearer(o =>
 // AutoMapper, Controllers, Swagger, HealthChecks
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "UserService API",
+        Version = "v1"
+    });
+
+    // 1. Definicja schematu Bearer
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Wpisz „Bearer ” + token JWT",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    // 2. Wymaganie globalne (każdego endpointu)
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            }
+        }
+        ] = Array.Empty<string>()
+    });
+});
 builder.Services.AddHealthChecks();
 
 
