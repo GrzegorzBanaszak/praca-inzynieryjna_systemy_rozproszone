@@ -1,0 +1,10 @@
+﻿namespace UserService.Settings
+{
+    public class JwtSettings
+    {
+        public string Key { get; set; } = null!;
+        public string Issuer { get; set; } = null!;
+        public string Audience { get; set; } = null!;
+        public int ExpirationMinutes { get; set; } // Default to 60 minutes
+    }
+}

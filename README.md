@@ -1,4 +1,4 @@
-# 📦 System Rozproszony zbudowany w ASP.NET Core (.NET 9) – Praca Inżynierska
+# 📦 System Rozproszony zbudowany w ASP.NET Core (.NET 8) – Praca Inżynierska
 
 ## 📘 Opis projektu
 
@@ -10,7 +10,7 @@ Aplikacja pełni rolę środowiska testowego do analizy wydajności, skalowalno�
 
 ## ⚙️ Stack technologiczny
 
-- **.NET 9 / ASP.NET Core** – Web API (REST)
+- **.NET 8 / ASP.NET Core** – Web API (REST)
 - **Entity Framework Core** – ORM (PostgreSQL)
 - **MongoDB / Redis** – dane produktowe i cache
 - **Apache Kafka** – przesyłanie zdarzeń
