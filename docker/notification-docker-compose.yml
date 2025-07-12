@@ -1,0 +1,29 @@
+version: '3.8'
+
+services:
+  notificationservice:
+    build:
+      context: ../src/NotificationService
+      dockerfile: Dockerfile
+    image: notificationservice:latest
+    pull_policy: never
+    container_name: notificationservice
+    restart: unless-stopped
+    
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_URLS=http://+:80 
+      - KafkaSettings__BootstrapServers=kafka:9092
+      - KafkaSettings__Topic=orders
+      - KafkaSettings__GroupId=notification-service-group
+      - SmtpSettings__Host=smtp.example.com
+      - SmtpSettings__Port=587
+      - SmtpSettings__User=noreply@example.com
+      - SmtpSettings__Pass=SuperTajneHaslo
+    ports:
+      - '5004:80'
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:80/healthz"]
+      interval: 10s
+      timeout: 3s
+      retries: 3

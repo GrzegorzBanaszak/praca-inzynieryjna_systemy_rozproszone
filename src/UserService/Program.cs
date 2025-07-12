@@ -40,7 +40,7 @@ builder.Services.AddAuthentication(opt =>
 }).
 AddJwtBearer(o =>
 {
-    var key = Encoding.ASCII.GetBytes(jwt.Key);
+    var keyBytes = Encoding.UTF8.GetBytes(jwt.Key);
     o.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
@@ -48,7 +48,10 @@ AddJwtBearer(o =>
         ValidateIssuerSigningKey = true,
         ValidIssuer = jwt.Issuer,
         ValidAudience = jwt.Audience,
-        IssuerSigningKey = new SymmetricSecurityKey(key)
+        IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+
+        ValidateLifetime = true,
+        ClockSkew = TimeSpan.FromMinutes(5),
     };
 });
 

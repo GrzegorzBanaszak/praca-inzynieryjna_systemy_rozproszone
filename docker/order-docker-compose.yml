@@ -13,7 +13,7 @@ services:
       # tryb KRaft (bez Zookeepera)
       - KAFKA_CFG_PROCESS_ROLES=broker,controller
       - KAFKA_CFG_NODE_ID=1
-
+      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=true
       # listenery
       - KAFKA_CFG_LISTENERS=PLAINTEXT://:9092,CONTROLLER://:9093
       - KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP=PLAINTEXT:PLAINTEXT,CONTROLLER:PLAINTEXT
@@ -37,7 +37,21 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-
+  kafdrop:
+    image: obsidiandynamics/kafdrop:latest
+    container_name: kafdrop
+    restart: unless-stopped
+    ports:
+      - "9000:9000"
+    environment:
+      # adres Twojego brokera Kafka
+      KAFKA_BROKERCONNECT: "kafka:9092"
+      # (opcjonalnie) jeśli wymagasz uwierzytelniania SASL/SSL, dodaj tu USER & PASS
+      # JVM heap size
+      JVM_OPTS: "-Xms64M -Xmx128M"
+    depends_on:
+      kafka:
+        condition: service_healthy
   orderdb:
     image: postgres:15
     environment:

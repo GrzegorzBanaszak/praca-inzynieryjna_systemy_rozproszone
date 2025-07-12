@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
 using OrderService.Data;
 using OrderService.Profiles;
 using OrderService.Services;
@@ -36,41 +37,65 @@ builder.Services.AddScoped<IOrderService, OrderServices>();
 builder.Services.Configure<JwtSettings>(
     builder.Configuration.GetSection("JwtSettings"));
 
-// 2. Odczyt wartoœci JwtSettings do lokalnej zmiennej
 var jwtSettings = builder.Configuration
     .GetSection("JwtSettings")
     .Get<JwtSettings>();
 
 // 3. Dodanie autoryzacji JWT
-builder.Services.AddAuthentication(options =>
-{
-    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
-    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
-})
-.AddJwtBearer(options =>
-{
-    var key = Encoding.UTF8.GetBytes(jwtSettings.Key);
-    options.TokenValidationParameters = new TokenValidationParameters
-    {
-        ValidateIssuer = true,
-        ValidateAudience = true,
-        ValidateIssuerSigningKey = true,
-        ValidateLifetime = true,
+builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+  .AddJwtBearer(options =>
+  {
+      var keyBytes = Encoding.UTF8.GetBytes(jwtSettings.Key);
+      options.TokenValidationParameters = new TokenValidationParameters
+      {
+          ValidateIssuerSigningKey = true,
+          IssuerSigningKey = new SymmetricSecurityKey(keyBytes),
+          ValidateIssuer = true,
+          ValidIssuer = jwtSettings.Issuer,
+          ValidateAudience = true,
+          ValidAudience = jwtSettings.Audience,
 
-        ValidIssuer = jwtSettings.Issuer,
-        ValidAudience = jwtSettings.Audience,
-        IssuerSigningKey = new SymmetricSecurityKey(key),
-
-        // opcjonalnie: minimalny czas do koñca wa¿noœci tokenu
-        ClockSkew = TimeSpan.FromSeconds(30)
-    };
-});
+          ValidateLifetime = true,
+          ClockSkew = TimeSpan.FromMinutes(5),
+      };
+  });
 
 
 // Swagger, HealthChecks, Prometheus
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "Order service API",
+        Version = "v1"
+    });
+
+    // 1. Definicja schematu Bearer
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Description = "Wpisz ï¿½Bearer ï¿½ + token JWT",
+        Name = "Authorization",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+
+    // 2. Wymaganie globalne (kaï¿½dego endpointu)
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        [new OpenApiSecurityScheme
+        {
+            Reference = new OpenApiReference
+            {
+                Type = ReferenceType.SecurityScheme,
+                Id = "Bearer"
+            }
+        }
+        ] = Array.Empty<string>()
+    });
+});
 builder.Services.AddHealthChecks();
 builder.Services.AddMetricServer(opt =>
 {
