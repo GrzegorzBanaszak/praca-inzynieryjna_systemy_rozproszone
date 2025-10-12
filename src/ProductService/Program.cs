@@ -40,7 +40,6 @@ if (app.Environment.IsDevelopment())
 app.UseAuthorization();
 // Rejestruje metryki Prometheus
 app.UseMetricServer();
-// Zbiera metryki HTTP (latencja, liczba zapytañ, kody statusu)
 app.UseHttpMetrics();
 
 app.MapControllers();
