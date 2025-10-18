@@ -1,35 +1,40 @@
 # apps-product.tf
 resource "kubernetes_service_v1" "product" {
   metadata {
-    name      = "productservice"
+    name      = var.production_app_name
     namespace = var.namespace
   }
   spec {
-    selector = { app = "productservice" }
+    selector = { app = var.production_app_name }
     port {
       port        = 80
       target_port = 80
     }
   }
+  depends_on = [kubernetes_deployment_v1.mongo]
 }
 
 resource "kubernetes_deployment_v1" "product" {
   metadata {
-    name      = "productservice"
+    name      = var.production_app_name
     namespace = var.namespace
   }
   spec {
     replicas = 1
-    selector { match_labels = { app = "productservice" } }
+    selector { match_labels = { app = var.production_app_name } }
     template {
-      metadata { labels = { app = "productservice" } }
+      metadata { labels = { app = var.production_app_name } }
       spec {
         container {
-          name              = "productservice"
+          name              = var.production_app_name
           image             = var.image_productservice
-          image_pull_policy = "IfNotPresent"
+          image_pull_policy = "Never"
           env_from {
             config_map_ref { name = kubernetes_config_map_v1.product_cfg.metadata[0].name }
+          }
+          env {
+            name  = "ASPNETCORE_URLS"
+            value = "http://+:80"
           }
           port { container_port = 80 }
           readiness_probe {
@@ -44,4 +49,5 @@ resource "kubernetes_deployment_v1" "product" {
       }
     }
   }
+  depends_on = [kubernetes_service_v1.product]
 }

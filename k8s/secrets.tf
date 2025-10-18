@@ -10,6 +10,7 @@ resource "kubernetes_secret_v1" "jwt" {
     "Jwt__Audience"         = var.jwt_audience
     "Jwt__ExpiresInMinutes" = var.jwt_expires
   }
+  depends_on = [kubernetes_namespace_v1.ns]
 }
 
 resource "kubernetes_config_map_v1" "product_cfg" {
@@ -22,6 +23,7 @@ resource "kubernetes_config_map_v1" "product_cfg" {
     "MongoDbSettings__DatabaseName"     = "ProductDb"
     "MongoDbSettings__CollectionName"   = "Products"
   }
+  depends_on = [kubernetes_namespace_v1.ns]
 }
 
 resource "kubernetes_config_map_v1" "user_cfg" {
@@ -34,6 +36,8 @@ resource "kubernetes_config_map_v1" "user_cfg" {
     "JwtSettings__Issuer"                  = var.jwt_issuer
     "JwtSettings__Audience"                = var.jwt_audience
   }
+
+  depends_on = [kubernetes_namespace_v1.ns]
 }
 
 resource "kubernetes_config_map_v1" "order_cfg" {
@@ -48,4 +52,5 @@ resource "kubernetes_config_map_v1" "order_cfg" {
     "JwtSettings__Issuer"                  = var.jwt_issuer
     "JwtSettings__Audience"                = var.jwt_audience
   }
+  depends_on = [kubernetes_namespace_v1.ns]
 }

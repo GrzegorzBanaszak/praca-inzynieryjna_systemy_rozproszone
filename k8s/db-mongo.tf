@@ -11,6 +11,7 @@ resource "kubernetes_service_v1" "mongo" {
       target_port = 27017
     }
   }
+  depends_on = [kubernetes_namespace_v1.ns]
 }
 
 resource "kubernetes_deployment_v1" "mongo" {
@@ -37,4 +38,5 @@ resource "kubernetes_deployment_v1" "mongo" {
       }
     }
   }
+  depends_on = [kubernetes_namespace_v1.ns]
 }

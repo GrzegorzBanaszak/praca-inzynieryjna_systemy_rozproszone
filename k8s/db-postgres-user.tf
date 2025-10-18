@@ -11,6 +11,7 @@ resource "kubernetes_service_v1" "postgres_user" {
       target_port = 5432
     }
   }
+  depends_on = [kubernetes_namespace_v1.ns]
 }
 
 resource "kubernetes_deployment_v1" "postgres_user" {
@@ -49,4 +50,5 @@ resource "kubernetes_deployment_v1" "postgres_user" {
       }
     }
   }
+  depends_on = [kubernetes_namespace_v1.ns]
 }

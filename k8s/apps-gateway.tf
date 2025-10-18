@@ -11,6 +11,7 @@ resource "kubernetes_service_v1" "apigateway" {
       target_port = 80
     }
   }
+  depends_on = [kubernetes_namespace_v1.ns]
 }
 
 resource "kubernetes_deployment_v1" "apigateway" {
@@ -27,7 +28,7 @@ resource "kubernetes_deployment_v1" "apigateway" {
         container {
           name              = "apigateway"
           image             = var.image_apigatewayservice
-          image_pull_policy = "IfNotPresent"
+          image_pull_policy = "Never"
           env_from {
             secret_ref { name = kubernetes_secret_v1.jwt.metadata[0].name }
           }
@@ -48,4 +49,5 @@ resource "kubernetes_deployment_v1" "apigateway" {
       }
     }
   }
+  depends_on = [kubernetes_namespace_v1.ns]
 }

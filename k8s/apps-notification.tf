@@ -11,6 +11,7 @@ resource "kubernetes_service_v1" "notification" {
       target_port = 80
     }
   }
+  depends_on = [kubernetes_deployment_v1.order]
 }
 
 resource "kubernetes_deployment_v1" "notification" {
@@ -27,10 +28,10 @@ resource "kubernetes_deployment_v1" "notification" {
         container {
           name              = "notificationservice"
           image             = var.image_notificationservice
-          image_pull_policy = "IfNotPresent"
+          image_pull_policy = "Never"
           env {
             name  = "KafkaSettings__BootstrapServers"
-            value = "kafka:9092"
+            value = "redpanda:9092"
           }
           env {
             name  = "KafkaSettings__Topic"
@@ -40,7 +41,13 @@ resource "kubernetes_deployment_v1" "notification" {
             name  = "KafkaSettings__GroupId"
             value = "notification-service-group"
           }
-          port { container_port = 80 }
+          env {
+            name  = "ASPNETCORE_URLS"
+            value = "http://+:80"
+          }
+          port {
+            container_port = 80
+          }
           readiness_probe {
             http_get {
               path = "/healthz"
@@ -53,4 +60,5 @@ resource "kubernetes_deployment_v1" "notification" {
       }
     }
   }
+  depends_on = [kubernetes_service_v1.notification]
 }

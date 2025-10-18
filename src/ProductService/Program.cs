@@ -44,4 +44,5 @@ app.UseHttpMetrics();
 
 app.MapControllers();
 app.MapMetrics();
+app.MapHealthChecks("/healthz");
 app.Run();

@@ -59,3 +59,45 @@ paket-files/
 
 # Others (stylecop, build artifacts, etc.)
 node_modules/
+
+# === Terraform ===
+# Pliki lokalnego stanu i backupy
+*.tfstate
+*.tfstate.*
+crash.log
+crash.*.log
+
+# Folder z plikami lokalnego stanu
+.terraform/
+.terraform.lock.hcl
+
+# Pliki planów i wyjściowe
+*.tfplan
+*.tfplan.*
+plan.out
+
+# Pliki zmiennych lokalnych (nie wersjonuj danych wrażliwych!)
+terraform.tfvars
+*.auto.tfvars
+*.auto.tfvars.json
+
+# Tymczasowe i robocze pliki edytorów
+*.swp
+*.swo
+*.bak
+*.tmp
+*.log
+
+# VS Code
+.vscode/
+
+# macOS
+.DS_Store
+
+# Linux
+*~
+
+# Windows
+Thumbs.db
+ehthumbs.db
+desktop.ini

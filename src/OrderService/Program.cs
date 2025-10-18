@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using OrderService.Common;
 using OrderService.Data;
 using OrderService.Profiles;
 using OrderService.Services;
@@ -27,6 +28,17 @@ builder.Services.AddSingleton(sp =>
     return new ProducerBuilder<Null, string>(prodCfg).Build();
 });
 
+builder.Services.AddSingleton<IAdminClient>(sp =>
+{
+    var cfg = sp.GetRequiredService<IOptions<KafkaSettings>>().Value;
+    return new AdminClientBuilder(new AdminClientConfig
+    {
+        BootstrapServers = cfg.BootstrapServers
+    }).Build();
+});
+
+// HostedService, który upewni się, że topic istnieje
+builder.Services.AddHostedService<KafkaTopicInitializer>();
 // AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 
@@ -75,7 +87,7 @@ builder.Services.AddSwaggerGen(c =>
     // 1. Definicja schematu Bearer
     c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
     {
-        Description = "Wpisz �Bearer � + token JWT",
+        Description = "Wpisz Bearer + token JWT",
         Name = "Authorization",
         In = ParameterLocation.Header,
         Type = SecuritySchemeType.ApiKey,
@@ -102,7 +114,7 @@ builder.Services.AddMetricServer(opt =>
     opt.Port = 9090; // Port for Prometheus metrics
 
 });
-builder.Services.AddHealthChecks();
+
 
 
 

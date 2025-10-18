@@ -1,0 +1,6 @@
+& minikube -p minikube docker-env | Invoke-Expression
+docker build -t userservice:latest         .\src\UserService
+docker build -t productservice:latest      .\src\ProductService
+docker build -t orderservice:latest        .\src\OrderService
+docker build -t notificationservice:latest .\src\NotificationService
+docker build -t apigatewayservice:latest   .\src\ApiGatewayService

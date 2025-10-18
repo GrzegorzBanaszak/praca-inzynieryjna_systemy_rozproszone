@@ -9,8 +9,8 @@ var builder = WebApplication.CreateBuilder(args);
 // 1. Konfiguracje
 builder.Services.Configure<KafkaSettings>(
     builder.Configuration.GetSection("KafkaSettings"));
-builder.Services.Configure<SmtpSettings>(
-    builder.Configuration.GetSection("SmtpSettings"));
+// builder.Services.Configure<SmtpSettings>(
+//     builder.Configuration.GetSection("SmtpSettings"));
 
 // 2. Serwisy
 builder.Services.AddSingleton<INotificationService, NotificationServices>();
@@ -25,11 +25,9 @@ builder.Services.AddMetricServer(opt =>
     opt.Port = 9090; // Port for Prometheus metrics
 
 });
-builder.Services.AddHealthChecks();
-builder.Services.AddHealthChecks();
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddHealthChecks();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
@@ -47,10 +45,12 @@ app.UseRouting();
 
 app.UseMetricServer();    // /metrics
 app.UseHttpMetrics();
-app.MapHealthChecks("/healthz");
 
 // (opcjonalnie) expose controller do testu
 app.MapControllers();
+app.MapHealthChecks("/healthz");
+app.MapMetrics();
+
 
 
 app.Run();

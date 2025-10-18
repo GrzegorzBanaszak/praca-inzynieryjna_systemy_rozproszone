@@ -15,6 +15,11 @@ variable "kube_context" {
   default = "minikube"
 }
 
+variable "production_app_name" {
+  type    = string
+  default = "productservice"
+}
+
 variable "image_userservice" {
   type    = string
   default = "userservice:latest"

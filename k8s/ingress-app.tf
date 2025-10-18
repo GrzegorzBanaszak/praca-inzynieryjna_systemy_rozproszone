@@ -24,4 +24,5 @@ resource "kubernetes_ingress_v1" "ing" {
       }
     }
   }
+  depends_on = [kubernetes_namespace_v1.ns]
 }

@@ -11,6 +11,7 @@ resource "kubernetes_service_v1" "user" {
       target_port = 80
     }
   }
+  depends_on = [kubernetes_deployment_v1.postgres_user]
 }
 
 resource "kubernetes_deployment_v1" "user" {
@@ -27,9 +28,13 @@ resource "kubernetes_deployment_v1" "user" {
         container {
           name              = "userservice"
           image             = var.image_userservice
-          image_pull_policy = "IfNotPresent"
+          image_pull_policy = "Never"
           env_from {
             config_map_ref { name = kubernetes_config_map_v1.user_cfg.metadata[0].name }
+          }
+          env {
+            name  = "ASPNETCORE_URLS"
+            value = "http://+:80"
           }
           env {
             name = "JwtSettings__Key"
@@ -80,4 +85,5 @@ resource "kubernetes_deployment_v1" "user" {
       }
     }
   }
+  depends_on = [kubernetes_service_v1.user]
 }
