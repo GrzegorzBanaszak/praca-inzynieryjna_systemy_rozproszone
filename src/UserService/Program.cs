@@ -90,7 +90,7 @@ builder.Services.AddSwaggerGen(c =>
         ] = Array.Empty<string>()
     });
 });
-builder.Services.AddHealthChecks();
+
 
 
 var app = builder.Build();

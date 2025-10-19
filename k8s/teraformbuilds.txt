@@ -4,3 +4,4 @@ docker build -t productservice:latest      .\src\ProductService
 docker build -t orderservice:latest        .\src\OrderService
 docker build -t notificationservice:latest .\src\NotificationService
 docker build -t apigatewayservice:latest   .\src\ApiGatewayService
+minikube tunnel

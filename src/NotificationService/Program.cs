@@ -5,6 +5,13 @@ using NotificationService.Settings;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Services.AddMetricServer(opt =>
+{
+    opt.Port = 9090; // Port for Prometheus metrics
+
+});
+builder.Services.AddHealthChecks(); ; //  endpoint /healthz
+
 
 // 1. Konfiguracje
 builder.Services.Configure<KafkaSettings>(
@@ -12,45 +19,29 @@ builder.Services.Configure<KafkaSettings>(
 // builder.Services.Configure<SmtpSettings>(
 //     builder.Configuration.GetSection("SmtpSettings"));
 
+builder.Services.Configure<HostOptions>(o =>
+{
+    o.BackgroundServiceExceptionBehavior = BackgroundServiceExceptionBehavior.Ignore;
+});
 // 2. Serwisy
 builder.Services.AddSingleton<INotificationService, NotificationServices>();
-builder.Services.AddHostedService<OrderPlacedConsumer>();
 
+builder.Services.AddHostedService<OrderPlacedConsumer>();
 // 3. AutoMapper
 builder.Services.AddAutoMapper(typeof(MappingProfile));
-
-// 4. Prometheus & HealthChecks
-builder.Services.AddMetricServer(opt =>
-{
-    opt.Port = 9090; // Port for Prometheus metrics
-
-});
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddHealthChecks();
-builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-app.UseDeveloperExceptionPage();
-if (app.Environment.IsDevelopment())
-{
-    app.UseDeveloperExceptionPage();
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
-
 
 app.UseRouting();
-
 app.UseMetricServer();    // /metrics
 app.UseHttpMetrics();
 
-// (opcjonalnie) expose controller do testu
-app.MapControllers();
-app.MapHealthChecks("/healthz");
+app.MapHealthChecks("/healthz").AllowAnonymous();
 app.MapMetrics();
-
+app.MapControllers();
 
 
 app.Run();

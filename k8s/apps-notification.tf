@@ -45,6 +45,7 @@ resource "kubernetes_deployment_v1" "notification" {
             name  = "ASPNETCORE_URLS"
             value = "http://+:80"
           }
+
           port {
             container_port = 80
           }
