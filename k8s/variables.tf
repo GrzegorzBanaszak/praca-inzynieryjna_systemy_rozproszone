@@ -68,3 +68,15 @@ variable "pg_password" {
   type    = string
   default = "postgres"
 }
+variable "grafana_admin_user" {
+  type        = string
+  default     = "admin"
+  description = "Grafana admin username"
+}
+
+variable "grafana_admin_password" {
+  type        = string
+  default     = "admin123"
+  description = "Grafana admin password"
+  sensitive   = true
+}

@@ -11,11 +11,6 @@ using UserService.Settings;
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddMetricServer(opt =>
-{
-    opt.Port = 9090; // Port for Prometheus metrics
-
-});
 builder.Services.AddHealthChecks(); //  endpoint /healthz
 
 builder.Services.AddAutoMapper(typeof(Program));

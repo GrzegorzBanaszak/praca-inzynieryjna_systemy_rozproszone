@@ -46,9 +46,7 @@ Aplikacja pełni rolę środowiska testowego do analizy wydajności, skalowalno�
 /docker
   Dockerfile dla każdego serwisu
 /k8s
-  deployment.yaml
-  service.yaml
-  ingress.yaml
+  apps-gateway.tf
 /monitoring
   prometheus-config.yaml
   grafana-dashboards.json
@@ -84,9 +82,32 @@ kubectl apply -f ./k8s
 
 ## 📈 Monitoring i testy
 
-- **Prometheus**: [http://localhost:9090](http://localhost:9090)
-- **Grafana**: [http://localhost:3000](http://localhost:3000)  
-  _(login: admin / hasło: admin)_
+📊 Dostęp do interfejsów:
+Prometheus:
+
+```bash
+
+# W Minikube:
+minikube service prometheus -n distributed-system
+
+# Lub bezpośrednio:
+kubectl port-forward -n distributed-system svc/prometheus 9090:9090
+# Następnie otwórz: http://localhost:9090
+
+```
+
+Grafana:
+
+```bash
+
+# W Minikube:
+minikube service grafana -n distributed-system
+
+# Lub bezpośrednio:
+kubectl port-forward -n distributed-system svc/grafana 3000:3000
+# Następnie otwórz: http://localhost:3000
+
+```
 
 Metryki Prometheusa dostępne pod endpointem `/metrics` w każdym serwisie.
 

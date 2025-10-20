@@ -5,12 +5,6 @@ using Prometheus;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddAutoMapper(typeof(Program));
 
-
-builder.Services.AddMetricServer(opt =>
-{
-    opt.Port = 9090; // Port for Prometheus metrics
-
-});
 builder.Services.AddHealthChecks();
 // Add services to the container.
 

@@ -31,7 +31,7 @@ builder.Services.AddControllers();
 builder.Services.AddReverseProxy()
        .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
-builder.Services.AddMetricServer(opt => { opt.Port = 9090; });
+// builder.Services.AddMetricServer(opt => { opt.Port = 9090; });
 builder.Services.AddHealthChecks();
 var app = builder.Build();
 

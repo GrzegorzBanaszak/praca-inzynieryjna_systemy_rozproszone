@@ -109,11 +109,6 @@ builder.Services.AddSwaggerGen(c =>
     });
 });
 builder.Services.AddHealthChecks();
-builder.Services.AddMetricServer(opt =>
-{
-    opt.Port = 9090; // Port for Prometheus metrics
-
-});
 
 
 
