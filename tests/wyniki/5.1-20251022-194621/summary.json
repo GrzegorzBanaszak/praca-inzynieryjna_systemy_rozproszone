@@ -1,0 +1,199 @@
+{
+    "root_group": {
+        "name": "",
+        "path": "",
+        "id": "d41d8cd98f00b204e9800998ecf8427e",
+        "groups": {},
+        "checks": {
+                "GET /api/product - status 200": {
+                    "path": "::GET /api/product - status 200",
+                    "id": "da320250edabf80e9c3c2cbde678f605",
+                    "passes": 9044,
+                    "fails": 0,
+                    "name": "GET /api/product - status 200"
+                },
+                "GET /api/product - odpowiedź w JSON": {
+                    "name": "GET /api/product - odpowiedź w JSON",
+                    "path": "::GET /api/product - odpowiedź w JSON",
+                    "id": "94fa20266db0adcc2a25c779a350a199",
+                    "passes": 9044,
+                    "fails": 0
+                },
+                "GET /api/product - zawiera produkty": {
+                    "name": "GET /api/product - zawiera produkty",
+                    "path": "::GET /api/product - zawiera produkty",
+                    "id": "43b1117d6c9f50b2fda84a9db22b7d50",
+                    "passes": 9044,
+                    "fails": 0
+                },
+                "GET /api/product - czas < 1s": {
+                    "name": "GET /api/product - czas < 1s",
+                    "path": "::GET /api/product - czas < 1s",
+                    "id": "a2aaa1bd9c7af113feede9bd8dc0341f",
+                    "passes": 8983,
+                    "fails": 61
+                },
+                "GET /api/product/:id - status 200": {
+                    "path": "::GET /api/product/:id - status 200",
+                    "id": "62d5f6a1649df833e5db8775838dbb42",
+                    "passes": 9044,
+                    "fails": 0,
+                    "name": "GET /api/product/:id - status 200"
+                },
+                "GET /api/product/:id - zawiera ID": {
+                    "name": "GET /api/product/:id - zawiera ID",
+                    "path": "::GET /api/product/:id - zawiera ID",
+                    "id": "0323bd5a67d5cf2aa2b0a25c4866a636",
+                    "passes": 9044,
+                    "fails": 0
+                },
+                "GET /api/product/:id - czas < 1s": {
+                    "passes": 9005,
+                    "fails": 39,
+                    "name": "GET /api/product/:id - czas < 1s",
+                    "path": "::GET /api/product/:id - czas < 1s",
+                    "id": "3aa9996363192811d1c99c473da2fd65"
+                }
+            }
+    },
+    "metrics": {
+        "http_req_duration{expected_response:true}": {
+            "med": 4.8869,
+            "max": 9892.791,
+            "p(90)": 30.533,
+            "p(95)": 77.05167999999995,
+            "avg": 65.83801440101703,
+            "min": 1.3283
+        },
+        "http_req_connecting": {
+            "p(95)": 0,
+            "avg": 0.0030726740007739517,
+            "min": 0,
+            "med": 0,
+            "max": 4.5317,
+            "p(90)": 0
+        },
+        "requests_total": {
+            "count": 18088,
+            "rate": 360.48689798232147
+        },
+        "http_reqs": {
+            "rate": 360.50682759853015,
+            "count": 18089
+        },
+        "http_req_blocked": {
+            "avg": 0.0035814196472994655,
+            "min": 0,
+            "med": 0,
+            "max": 4.5317,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "http_req_waiting": {
+            "avg": 65.70237048482485,
+            "min": 1.1691,
+            "med": 4.8143,
+            "max": 9892.791,
+            "p(90)": 30.04622000000001,
+            "p(95)": 76.96041999999994
+        },
+        "data_sent": {
+            "count": 1745584,
+            "rate": 34788.81917998522
+        },
+        "errors": {
+            "passes": 100,
+            "fails": 17988,
+            "thresholds": {
+                "rate<0.05": false
+            },
+            "value": 0.005528527200353826
+        },
+        "iteration_duration": {
+            "p(95)": 400.88303,
+            "avg": 432.66209325519554,
+            "min": 304.3927,
+            "med": 312.0045,
+            "max": 10279.0967,
+            "p(90)": 377.43145
+        },
+        "http_req_duration": {
+            "p(95)": 77.05167999999995,
+            "avg": 65.83801440101703,
+            "min": 1.3283,
+            "med": 4.8869,
+            "max": 9892.791,
+            "p(90)": 30.533,
+            "thresholds": {
+                "p(95)<500": false
+            }
+        },
+        "data_received": {
+            "count": 11388340,
+            "rate": 226965.245453781
+        },
+        "vus": {
+            "value": 6,
+            "min": 4,
+            "max": 100
+        },
+        "http_req_tls_handshaking": {
+            "p(90)": 0,
+            "p(95)": 0,
+            "avg": 0,
+            "min": 0,
+            "med": 0,
+            "max": 0
+        },
+        "response_time": {
+            "avg": 65.839253388987,
+            "min": 1.3283,
+            "med": 4.88635,
+            "max": 9892.791,
+            "p(90)": 30.484810000000078,
+            "p(95)": 77.05321999999992
+        },
+        "checks": {
+            "passes": 63208,
+            "fails": 100,
+            "value": 0.9984204207998989
+        },
+        "iterations": {
+            "count": 9044,
+            "rate": 180.24344899116073
+        },
+        "http_req_failed": {
+            "passes": 0,
+            "fails": 18089,
+            "thresholds": {
+                "rate<0.05": false
+            },
+            "value": 0
+        },
+        "vus_max": {
+            "value": 100,
+            "min": 100,
+            "max": 100
+        },
+        "http_req_sending": {
+            "avg": 0.0021742440157001496,
+            "min": 0,
+            "med": 0,
+            "max": 8.3191,
+            "p(90)": 0,
+            "p(95)": 0
+        },
+        "http_req_receiving": {
+            "avg": 0.1334696721764609,
+            "min": 0,
+            "med": 0,
+            "max": 65.3168,
+            "p(90)": 0,
+            "p(95)": 0.5291
+        }
+    },
+    "setup_data": {
+        "apiGateway": "http://distributed.local",
+        "startTime": "2025-10-22T17:46:21.707Z"
+    }
+}
