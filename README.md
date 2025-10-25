@@ -1,40 +1,41 @@
-# 📦 System Rozproszony zbudowany w ASP.NET Core (.NET 8) – Praca Inżynierska
+# Rozproszony System E-commerce w .NET 8
 
-## 📘 Opis projektu
+## Opis projektu
 
-Projekt jest częścią pracy inżynierskiej pt. **„Analiza i optymalizacja wydajności systemów rozproszonych”**. Celem aplikacji jest implementacja rozproszonego systemu opartego na mikroserwisach, wdrożonego w środowisku Kubernetes, obsługującego scenariusz e-commerce z wykorzystaniem .NET oraz Apache Kafka.
+Projekt stanowi implementację rozproszonego systemu e-commerce w architekturze mikroserwisowej. System zbudowano w ramach pracy inżynierskiej pt. „Analiza i optymalizacja wydajności systemów rozproszonych". Celem aplikacji było stworzenie środowiska testowego do badań nad wydajnością, skalowalnością i odpornością mikroserwisów w środowisku Kubernetes.
 
-Aplikacja pełni rolę środowiska testowego do analizy wydajności, skalowalności oraz odporności systemów rozproszonych.
+System składa się z kilku niezależnych usług komunikujących się zarówno synchronicznie (REST/gRPC) jak i asynchronicznie poprzez kolejkę zdarzeń Apache Kafka. Każdy mikroserwis exposes endpoint `/metrics` oraz sondę żywotności `/healthz` ułatwiające obserwowalność.
 
----
+## Architektura i mikroserwisy
 
-## ⚙️ Stack technologiczny
+Poniższa tabela przedstawia podstawowe usługi wchodzące w skład systemu oraz ich odpowiedzialności. Komponenty są odseparowane i mogą być niezależnie skalowane.
 
-- **.NET 8 / ASP.NET Core** – Web API (REST)
-- **Entity Framework Core** – ORM (PostgreSQL)
-- **MongoDB / Redis** – dane produktowe i cache
-- **Apache Kafka** – przesyłanie zdarzeń
-- **Docker** – konteneryzacja
+| Serwis                  | Krótki opis                                                                                                                                                                                                                                      |
+| ----------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| **ApiGateway**          | Pełni rolę bramy API – weryfikuje nagłówki i tokeny JWT, autoryzuje użytkowników i przekazuje zapytania do odpowiednich usług zaplecza.                                                                                                          |
+| **UserService**         | Odpowiada za rejestrację i logowanie użytkowników (`POST /api/auth/register`, `POST /api/auth/login`) oraz udostępnianie profilu pod endpointem `GET /api/profile/me`. Dane przechowywane są w bazie PostgreSQL z użyciem Entity Framework Core. |
+| **ProductService**      | Umożliwia pobieranie listy produktów (`GET /api/product`) oraz szczegółów wybranego produktu (`GET /api/product/{id}`) i dodawanie nowych wpisów (`POST /api/product`). Dane utrzymywane są w MongoDB.                                           |
+| **OrderService**        | Umożliwia składanie zamówień (`POST /api/orders`) oraz przeglądanie własnej historii (`GET /api/orders`). Po zapisaniu zamówienia publikowane jest zdarzenie OrderPlaced na temat orders w Kafka, a dane utrzymywane są w PostgreSQL.            |
+| **NotificationService** | Konsument zdarzeń – subskrybuje temat orders w Kafka i reaguje na pojawienie się nowych zamówień, np. generując logi lub wysyłając powiadomienia e-mail/SMS.                                                                                     |
+
+Dodatkowe szczegóły dotyczące implementacji usług (np. schematy autoryzacji, konfiguracja repozytoriów, mapowanie DTO, itp.) znajdują się w rozdziale 4 pracy inżynierskiej.
+
+## Stack technologiczny
+
+System wykorzystuje nowoczesne technologie chmurowe i narzędzia, m.in.:
+
+- **.NET 8 / ASP.NET Core** – tworzenie usług Web API (REST/gRPC)
+- **Entity Framework Core (PostgreSQL)** oraz **MongoDB/Redis** – persystencja danych
+- **Apache Kafka** – asynchroniczne przesyłanie zdarzeń
+- **Docker** – konteneryzacja aplikacji
 - **Kubernetes** – orkiestracja mikroserwisów
-- **Prometheus + Grafana** – monitoring
-- **GitHub Actions** – CI/CD
+- **Prometheus + Grafana** – monitorowanie i wizualizacja metryk
 - **k6** – testy wydajnościowe
+- **Terraform** – definiowanie infrastruktury jako kodu
 
----
+## Struktura repozytorium
 
-## 🧱 Mikroserwisy
-
-| Serwis                  | Funkcja                                           |
-| ----------------------- | ------------------------------------------------- |
-| **ApiGateway**          | Forwardowanie żądań REST między usługami          |
-| **UserService**         | Rejestracja i uwierzytelnianie użytkowników (JWT) |
-| **ProductService**      | Udostępnianie listy produktów                     |
-| **OrderService**        | Składanie zamówień i emisja zdarzeń               |
-| **NotificationService** | Reakcja na zdarzenia, logi, powiadomienia         |
-
----
-
-## 📂 Struktura repozytorium
+Struktura katalogów jest uporządkowana w sposób umożliwiający łatwe zrozumienie składowych projektu:
 
 ```
 /src
@@ -44,102 +45,182 @@ Aplikacja pełni rolę środowiska testowego do analizy wydajności, skalowalno�
   /OrderService
   /NotificationService
 /docker
-  Dockerfile dla każdego serwisu
+  # osobne Dockerfile dla każdej usługi
 /k8s
-  apps-gateway.tf
+  # definicje manifestów Kubernetes i Terraform
 /monitoring
   prometheus-config.yaml
   grafana-dashboards.json
 /tests
   k6-load-test.js
   /integration-tests
-/README.md
 ```
 
----
+## Konteneryzacja i orkiestracja
 
-## 🚀 Uruchamianie lokalnie
+Każdy mikroserwis jest pakowany do osobnego obrazu Docker przy użyciu dwustopniowego procesu: najpierw kompilacja na bazie `mcr.microsoft.com/dotnet/sdk:8.0`, a następnie uruchomienie na lżejszym obrazie `mcr.microsoft.com/dotnet/aspnet:8.0`. Konteneryzacji poddano również zależności systemu (PostgreSQL, MongoDB, Kafka), których konfiguracja przekazywana jest jako zmienne środowiskowe.
 
-### 1. Build i uruchomienie usług
+W projekcie wykorzystano Terraform do deklaratywnego zarządzania zasobami Kubernetes – definicje Deployment, Service oraz konfiguracje baz danych są opisane w plikach `*.tf`. Taka metoda umożliwia łatwe odtworzenie infrastruktury i kontrolę wersji.
+
+## Uruchamianie lokalne
+
+### 1. Budowanie i uruchamianie usług
+
+Aby uruchomić system w środowisku deweloperskim z Minikube, należy najpierw skonfigurować środowisko Docker, a następnie zbudować obrazy poszczególnych serwisów:
+
+```powershell
+minikube -p minikube docker-env | Invoke-Expression
+docker build -t userservice:latest         .\src\UserService
+docker build -t productservice:latest      .\src\ProductService
+docker build -t orderservice:latest        .\src\OrderService
+docker build -t notificationservice:latest .\src\NotificationService
+docker build -t apigatewayservice:latest   .\src\ApiGatewayService
+```
+
+### 2. Wdrożenie systemu z wykorzystaniem Terraform
+
+Po zbudowaniu obrazów Docker, należy wdrożyć system w klastrze Kubernetes przy użyciu Terraform:
 
 ```bash
-docker-compose up --build
+cd k8s
+terraform init
+terraform plan
+terraform apply -auto-approve
 ```
 
-### 2. Dostępne endpointy
+Terraform automatycznie utworzy:
 
-- `http://localhost:5000/api/user`
-- `http://localhost:5000/api/product`
-- `http://localhost:5000/api/order`
+- Namespace `distributed-system`
+- Deploymenty i Service dla wszystkich mikroserwisów (UserService, ProductService, OrderService, NotificationService, ApiGateway)
+- Bazy danych (PostgreSQL dla UserService i OrderService, MongoDB dla ProductService)
+- Kafka (RedPanda) do obsługi zdarzeń asynchronicznych
+- Ingress dla ApiGateway
+- System monitoringu (Prometheus + Grafana)
 
-### 3. Uruchomienie w Kubernetes (np. Minikube)
+Po zakończeniu wdrożenia, uruchom tunel Minikube, aby uzyskać dostęp do usług:
 
 ```bash
-kubectl apply -f ./k8s
+minikube tunnel
 ```
 
----
+### 3. Dostępne endpointy API
 
-## 📈 Monitoring i testy
+Po uruchomieniu wszystkie żądania przechodzą przez ApiGateway dostępny pod adresem `http://distributed.local` (lub przez `minikube tunnel`). System udostępnia następujące endpointy:
 
-📊 Dostęp do interfejsów:
-Prometheus:
+#### Autoryzacja i użytkownicy (UserService)
 
-```bash
-
-# W Minikube:
-minikube service prometheus -n distributed-system
-
-# Lub bezpośrednio:
-kubectl port-forward -n distributed-system svc/prometheus 9090:9090
-# Następnie otwórz: http://localhost:9090
+**Rejestracja użytkownika:**
 
 ```
+POST /api/user/register
+Content-Type: application/json
 
-Grafana:
-
-```bash
-
-# W Minikube:
-minikube service grafana -n distributed-system
-
-# Lub bezpośrednio:
-kubectl port-forward -n distributed-system svc/grafana 3000:3000
-# Następnie otwórz: http://localhost:3000
-
+{
+  "username": "string",
+  "password": "string"
+}
 ```
 
-Metryki Prometheusa dostępne pod endpointem `/metrics` w każdym serwisie.
+**Logowanie:**
 
-### k6 – testy obciążeniowe
+```
+POST /api/user/login
+Content-Type: application/json
 
-```bash
-k6 run tests/k6-load-test.js
+{
+  "username": "string",
+  "password": "string"
+}
+
+Odpowiedź: { "token": "JWT_TOKEN" }
 ```
 
----
+**Profil użytkownika (wymaga autoryzacji):**
 
-## 📊 Wyniki i analiza
+```
+GET /api/user/me
+Authorization: Bearer {JWT_TOKEN}
+```
 
-Wyniki testów oraz analiza wpływu zastosowanych optymalizacji znajdują się w **rozdziale 5 pracy inżynierskiej**. Zakres testów obejmuje:
+#### Produkty (ProductService)
 
-- testy obciążeniowe (1000+ RPS),
-- testy odpornościowe (awarie usług),
-- obserwację autoskalowania w Kubernetesie,
-- efekty migracji REST → gRPC.
+**Lista wszystkich produktów:**
 
----
+```
+GET /api/product
+```
 
-## 👨‍🎓 Autor i promotor
+**Szczegóły produktu:**
 
-- **Autor**: Grzegorz Banaszak
-- **Promotor**: dr inż. Imię Nazwisko
-- **Uczelnia**: Wydział Studiów Stosowanych  
-  Kierunek: Informatyka  
-  Specjalność: Inżynier aplikacji i systemów chmurowych
+```
+GET /api/product/{id}
+```
 
----
+**Dodanie nowego produktu:**
 
-## 📝 Licencja
+```
+POST /api/product
+Content-Type: application/json
 
-Projekt stworzony do celów edukacyjnych i dyplomowych. Wszelkie prawa zastrzeżone.
+{
+  "name": "string",
+  "price": 0.00,
+  "stock": 0
+}
+```
+
+#### Zamówienia (OrderService - wymaga autoryzacji)
+
+**Złożenie zamówienia:**
+
+```
+POST /api/order
+Authorization: Bearer {JWT_TOKEN}
+Content-Type: application/json
+
+{
+  "productId": "guid",
+  "quantity": 0
+}
+```
+
+**Historia zamówień użytkownika:**
+
+```
+GET /api/order
+Authorization: Bearer {JWT_TOKEN}
+```
+
+#### Dokumentacja Swagger
+
+Każdy serwis udostępnia dokumentację Swagger:
+
+- UserService: `http://userservice/swagger`
+- ProductService: `http://productservice/swagger`
+- OrderService: `http://orderservice/swagger`
+
+## Monitoring i testy
+
+Dostęp do interfejsów monitoringu i wyników testów możliwy jest za pomocą narzędzi opisanych poniżej:
+
+- **Prometheus** – uruchomione w klastrze Kubernetes; usługa może być wystawiona poprzez `minikube service prometheus -n distributed-system` lub `kubectl port-forward` na port 9090.
+
+- **Grafana** – w podobny sposób dostępne są prekonfigurowane dashboardy; można je otworzyć po wykonaniu `minikube service grafana` lub `kubectl port-forward` na port 3000.
+
+Każdy serwis wystawia metryki pod endpointem `/metrics` oraz sondę zdrowotną `/healthz`.
+
+Do przeprowadzenia testów obciążeniowych użyto **k6**. Szkrypt `k6-load-test.js` definiuje scenariusze wysokiej liczby zapytań (1000+ RPS) i scenariusze awarii. Testy mierzą m.in. czas odpowiedzi, przepustowość i reakcję systemu na skalowanie w Kubernetesie.
+
+## Wyniki i analiza
+
+Szczegółowa analiza wyników testów (m.in. porównanie komunikacji REST vs gRPC, obserwacja autoskalowania, reakcja na awarie) została opisana w rozdziale 5 pracy inżynierskiej. W niniejszym repozytorium zamieszczono jedynie skrypty testowe; wyniki można wygenerować samodzielnie uruchamiając k6.
+
+## Autor i promotor
+
+- **Autor:** Grzegorz Banaszak
+- **Promotor:** dr inż. Mateusz Hyk
+- **Uczelnia:** Wydział Studiów Stosowanych, kierunek Informatyka – specjalność Inżynier aplikacji i systemów chmurowych
+
+## Licencja
+
+Projekt został przygotowany na potrzeby pracy dyplomowej i jest udostępniony wyłącznie w celach edukacyjnych. Wszelkie prawa zastrzeżone.
