@@ -218,7 +218,7 @@ Szczegółowa analiza wyników testów (m.in. porównanie komunikacji REST vs gR
 ## Autor i promotor
 
 - **Autor:** Grzegorz Banaszak
-- **Promotor:** dr inż. Mateusz Hyk
+- **Promotor:** mgr inż. Mateusz Hyk
 - **Uczelnia:** Wydział Studiów Stosowanych, kierunek Informatyka – specjalność Inżynier aplikacji i systemów chmurowych
 
 ## Licencja
