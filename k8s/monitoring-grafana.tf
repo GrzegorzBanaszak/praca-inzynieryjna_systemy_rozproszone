@@ -3,7 +3,7 @@
 # ConfigMap z konfiguracją datasource dla Grafany
 resource "kubernetes_config_map_v1" "grafana_datasources" {
   metadata {
-    name      = "grafana-datasources"
+    name      = "cd-datasources"
     namespace = var.namespace
   }
 
