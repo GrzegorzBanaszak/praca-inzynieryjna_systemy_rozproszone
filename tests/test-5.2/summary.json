@@ -1,0 +1,28 @@
+{
+  "testInfo": {
+    "startTime": "1970-01-01T00:00:54.509Z",
+    "duration": "54.51s",
+    "vus": 50
+  },
+  "httpMetrics": {
+    "totalRequests": 968,
+    "requestRate": "17.76",
+    "failedRequests": "0.00",
+    "avgDuration": "16.21",
+    "p95Duration": "44.04",
+    "p99Duration": "58.96"
+  },
+  "orderMetrics": {
+    "totalOrders": 775,
+    "successRate": "100.00",
+    "avgCreationTime": "18.25",
+    "p95CreationTime": "44.30",
+    "p99CreationTime": "57.26"
+  },
+  "errors": {
+    "authFailures": 0,
+    "orderFailures": 0,
+    "http401": 0,
+    "http500": 0
+  }
+}

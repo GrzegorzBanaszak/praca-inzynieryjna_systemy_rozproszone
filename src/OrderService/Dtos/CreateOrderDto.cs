@@ -2,7 +2,7 @@
 {
     public class CreateOrderDto
     {
-        public Guid ProductId { get; set; }
+        public string ProductId { get; set; } = default!;
         public int Quantity { get; set; }
     }
 }

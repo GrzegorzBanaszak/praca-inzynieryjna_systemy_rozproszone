@@ -1,0 +1,306 @@
+### ==============================================================================
+### DISTRIBUTED SYSTEM API - Complete Examples
+### ==============================================================================
+
+@baseUrl = http://distributed.local
+@token = {{login.response.body.$.token}}
+
+### ==============================================================================
+### USER SERVICE - Authentication
+### ==============================================================================
+
+### 1. Rejestracja użytkownika
+# @name register
+POST {{baseUrl}}/api/user/register
+Content-Type: application/json
+
+{
+  "username": "Jan Kowalski",
+  "password": "Jankowalski123"
+}
+
+###
+
+### 2. Logowanie użytkownika
+# @name login
+POST {{baseUrl}}/api/user/login
+Content-Type: application/json
+
+{
+  "username": "Jan Kowalski",
+  "password": "Jankowalski123"
+}
+
+###
+
+### 3. Pobierz profil zalogowanego użytkownika (wymaga tokenu)
+GET {{baseUrl}}/api/user/me
+Authorization: Bearer {{token}}
+
+###
+
+### ==============================================================================
+### PRODUCT SERVICE
+### ==============================================================================
+
+### 4. Pobierz listę wszystkich produktów
+GET {{baseUrl}}/api/product
+Content-Type: application/json
+
+###
+
+### 5. Pobierz pojedynczy produkt po ID
+# Uwaga: ID to MongoDB ObjectId (24 znaki hex) np: 507f1f77bcf86cd799439011
+GET {{baseUrl}}/api/product/507f1f77bcf86cd799439011
+Content-Type: application/json
+
+###
+
+### 6. Utwórz nowy produkt
+POST {{baseUrl}}/api/product
+Content-Type: application/json
+
+{
+  "name": "Laptop Dell XPS 15",
+  "price": 5999.99,
+  "stock": 50
+}
+
+###
+
+### 7. Utwórz produkt - przykład 2
+POST {{baseUrl}}/api/product
+Content-Type: application/json
+
+{
+  "name": "Słuchawki Sony WH-1000XM4",
+  "price": 1299.00,
+  "stock": 100
+}
+
+###
+
+### ==============================================================================
+### ORDER SERVICE (wymaga autoryzacji)
+### ==============================================================================
+
+### 8. Utwórz zamówienie (wymaga tokenu JWT)
+POST {{baseUrl}}/api/order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "productId": "68fe4423167b4eaf5f872a48",
+  "quantity": 2
+}
+
+###
+
+### 9. Pobierz zamówienia zalogowanego użytkownika
+GET {{baseUrl}}/api/order
+Authorization: Bearer {{token}}
+
+###
+
+### ==============================================================================
+### HEALTH CHECKS
+### ==============================================================================
+
+### 10. Health check - UserService
+GET {{baseUrl}}/api/user/healthz
+
+###
+
+### 11. Health check - ProductService  
+GET {{baseUrl}}/api/product/healthz
+
+###
+
+### 12. Health check - OrderService
+GET {{baseUrl}}/api/order/healthz
+
+###
+
+### ==============================================================================
+### MONITORING - Prometheus Metrics
+### ==============================================================================
+
+### 13. Metryki - UserService
+GET http://userservice/metrics
+
+###
+
+### 14. Metryki - ProductService
+GET http://productservice/metrics
+
+###
+
+### 15. Metryki - OrderService
+GET http://orderservice/metrics
+
+###
+
+### 16. Metryki - ApiGateway
+GET http://apigateway/metrics
+
+###
+
+### 17. Metryki - NotificationService
+GET http://notificationservice/metrics
+
+###
+
+### ==============================================================================
+### COMPLETE WORKFLOW EXAMPLE
+### ==============================================================================
+
+### Krok 1: Zarejestruj nowego użytkownika
+# @name registerUser
+POST {{baseUrl}}/api/user/register
+Content-Type: application/json
+
+{
+  "username": "testuser_{{$timestamp}}",
+  "password": "SecurePass123!"
+}
+
+###
+
+### Krok 2: Zaloguj się
+# @name loginUser
+POST {{baseUrl}}/api/user/login
+Content-Type: application/json
+
+{
+  "username": "testuser_1234567890",
+  "password": "SecurePass123!"
+}
+
+###
+
+### Krok 3: Sprawdź swój profil
+GET {{baseUrl}}/api/user/me
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+###
+
+### Krok 4: Utwórz produkt
+# @name createProduct
+POST {{baseUrl}}/api/product
+Content-Type: application/json
+
+{
+  "name": "Testowy Produkt {{$timestamp}}",
+  "price": 299.99,
+  "stock": 25
+}
+
+###
+
+### Krok 5: Pobierz wszystkie produkty
+# @name getProducts
+GET {{baseUrl}}/api/product
+
+###
+
+### Krok 6: Utwórz zamówienie
+POST {{baseUrl}}/api/order
+Authorization: Bearer {{loginUser.response.body.$.token}}
+Content-Type: application/json
+
+{
+  "productId": "{{createProduct.response.body.$.id}}",
+  "quantity": 3
+}
+
+###
+
+### Krok 7: Sprawdź swoje zamówienia
+GET {{baseUrl}}/api/order
+Authorization: Bearer {{loginUser.response.body.$.token}}
+
+###
+
+### ==============================================================================
+### ERROR EXAMPLES
+### ==============================================================================
+
+### Błąd - Logowanie z błędnym hasłem
+POST {{baseUrl}}/api/user/login
+Content-Type: application/json
+
+{
+  "username": "Jan Kowalski",
+  "password": "WrongPassword"
+}
+
+###
+
+### Błąd - Próba dostępu bez tokenu
+GET {{baseUrl}}/api/user/me
+
+###
+
+### Błąd - Utworzenie zamówienia bez autoryzacji
+POST {{baseUrl}}/api/order
+Content-Type: application/json
+
+{
+  "productId": "507f1f77bcf86cd799439011",
+  "quantity": 1
+}
+
+###
+
+### Błąd - Produkt z błędnymi danymi (cena <= 0)
+POST {{baseUrl}}/api/product
+Content-Type: application/json
+
+{
+  "name": "Testowy Produkt",
+  "price": -10,
+  "stock": 5
+}
+
+###
+
+### Błąd - Zamówienie z nieprawidłową ilością
+POST {{baseUrl}}/api/order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "productId": "507f1f77bcf86cd799439011",
+  "quantity": -5
+}
+
+###
+
+### ==============================================================================
+### LOAD TESTING EXAMPLES
+### ==============================================================================
+
+### Szybkie zamówienia - 10 requestów
+# @name quickOrders
+POST {{baseUrl}}/api/order
+Authorization: Bearer {{token}}
+Content-Type: application/json
+
+{
+  "productId": "507f1f77bcf86cd799439011",
+  "quantity": {{$randomInt 1 5}}
+}
+
+###
+
+### Losowy produkt
+POST {{baseUrl}}/api/product
+Content-Type: application/json
+
+{
+  "name": "Product-{{$guid}}",
+  "price": {{$randomInt 10 1000}},
+  "stock": {{$randomInt 10 100}}
+}
+
+###

@@ -11,7 +11,7 @@ resource "kubernetes_config_map_v1" "grafana_datasources" {
     "prometheus.yml" = <<-EOF
       apiVersion: 1
       datasources:
-        - name: Prometheus
+        - name: prometheus
           type: prometheus
           access: proxy
           url: http://prometheus:9090

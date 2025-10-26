@@ -49,6 +49,12 @@ resource "kubernetes_config_map_v1" "prometheus_config" {
             - targets: ['apigateway:80']
           metrics_path: '/metrics'
 
+        # Kafka Exporter
+        - job_name: 'kafka'
+          static_configs:
+            - targets: ['kafka-exporter:9308']
+          metrics_path: '/metrics'
+
         # Kubernetes API Server
         - job_name: 'kubernetes-apiservers'
           kubernetes_sd_configs:

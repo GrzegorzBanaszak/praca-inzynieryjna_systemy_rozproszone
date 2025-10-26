@@ -1,0 +1,21 @@
+
+### Pobierz listę użytkowników
+GET https://jsonplaceholder.typicode.com/users
+
+### Rejestracja
+POST http://distributed.local/api/user/register
+Content-Type: application/json
+
+{
+  "username": "Jan Kowalski",
+  "password": "Jankowalski123"
+}
+
+### Login
+POST http://distributed.local/api/user/login
+Content-Type: application/json
+
+{
+  "username": "Jan Kowalski",
+  "password": "Jankowalski123"
+}
