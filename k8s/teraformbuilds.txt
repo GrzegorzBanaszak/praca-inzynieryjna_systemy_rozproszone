@@ -6,3 +6,4 @@ docker build -t notificationservice:latest .\src\NotificationService
 docker build -t apigatewayservice:latest   .\src\ApiGatewayService
 minikube tunnel
 minikube service grafana -n distributed-system --url
+minikube service prometheus -n distributed-system --url
