@@ -19,31 +19,7 @@ resource "kubernetes_config_map_v1" "prometheus_config" {
           static_configs:
             - targets: ['localhost:9090']
 
-        # KSM
-        - job_name: 'kube-state-metrics'
-          kubernetes_sd_configs:
-            - role: endpoints
-          relabel_configs:
-            - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name]
-              action: keep
-              regex: ${var.namespace};kube-state-metrics
-            # główne metryki KSM — różne nazwy portów w chartach
-            - source_labels: [__meta_kubernetes_endpoint_port_name]
-              action: keep
-              regex: (http|http-metrics)
-                
-        # (opcja B) zbieraj wszystkie metryki KSM
-        - job_name: 'kube-state-metrics-telemetry'
-          kubernetes_sd_configs:
-            - role: endpoints
-          relabel_configs:
-            - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name]
-              action: keep
-              regex: ${var.namespace};kube-state-metrics
-            # telemetria KSM — też bywają różne nazwy
-            - source_labels: [__meta_kubernetes_endpoint_port_name]
-              action: keep
-              regex: (telemetry|metrics)
+        
 
         # UserService
         - job_name: 'userservice'
