@@ -19,7 +19,7 @@ resource "kubernetes_config_map_v1" "prometheus_config" {
           static_configs:
             - targets: ['localhost:9090']
 
-        
+
 
         # UserService
         - job_name: 'userservice'
@@ -57,6 +57,8 @@ resource "kubernetes_config_map_v1" "prometheus_config" {
             - targets: ['kafka-exporter:9308']
           metrics_path: '/metrics'
 
+
+
         # Kubernetes API Server
         - job_name: 'kubernetes-apiservers'
           kubernetes_sd_configs:
@@ -69,7 +71,24 @@ resource "kubernetes_config_map_v1" "prometheus_config" {
             - source_labels: [__meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name]
               action: keep
               regex: default;kubernetes;https
-
+        # Kubernetes Controller
+        - job_name: 'kubernetes-kubelet'
+          kubernetes_sd_configs:
+            - role: node
+          scheme: https
+          tls_config:
+            ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+            insecure_skip_verify: true
+          authorization:
+            credentials_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        # Metrics Server
+        - job_name: 'metrics-server'
+          scheme: https
+          metrics_path: /metrics
+          static_configs:
+            - targets: ['metrics-server.kube-system.svc:443']
+          tls_config:
+            insecure_skip_verify: true
         # Kubernetes nodes
         - job_name: 'kubernetes-nodes'
           kubernetes_sd_configs:
@@ -145,6 +164,12 @@ resource "kubernetes_cluster_role_v1" "prometheus" {
     api_groups = [""]
     resources  = ["configmaps"]
     verbs      = ["get"]
+  }
+
+  rule {
+    api_groups = ["metrics.k8s.io"]
+    resources  = ["pods", "nodes"]
+    verbs      = ["get", "list"]
   }
 }
 

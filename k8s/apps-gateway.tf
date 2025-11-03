@@ -45,6 +45,16 @@ resource "kubernetes_deployment_v1" "apigateway" {
             initial_delay_seconds = 10
             period_seconds        = 10
           }
+          resources {
+            requests = {
+              cpu    = "500m" # 0.5 CPU core
+              memory = "512Mi"
+            }
+            limits = {
+              cpu    = "1000m" # 1 CPU core
+              memory = "1Gi"
+            }
+          }
         }
       }
     }

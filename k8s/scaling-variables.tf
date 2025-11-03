@@ -4,7 +4,7 @@
 # Scenario selector: "baseline" | "horizontal" | "vertical" | "hpa"
 variable "scaling_scenario" {
   type        = string
-  default     = "horizontal"
+  default     = "hpa"
   description = "Which scaling scenario to deploy: baseline, horizontal, vertical, or hpa"
 }
 
@@ -19,10 +19,10 @@ variable "scenario_baseline" {
   })
   default = {
     replicas    = 1
-    cpu_request = "250m"
-    cpu_limit   = "500m"
-    mem_request = "256Mi"
-    mem_limit   = "512Mi"
+    cpu_request = "100m"
+    cpu_limit   = "150m"
+    mem_request = "128Mi"
+    mem_limit   = "256Mi"
   }
   description = "Baseline configuration: minimal resources, single pod"
 }
@@ -38,10 +38,10 @@ variable "scenario_horizontal" {
   })
   default = {
     replicas    = 3
-    cpu_request = "250m"
-    cpu_limit   = "500m"
-    mem_request = "256Mi"
-    mem_limit   = "512Mi"
+    cpu_request = "100m"
+    cpu_limit   = "150m"
+    mem_request = "128Mi"
+    mem_limit   = "256Mi"
   }
   description = "Horizontal scaling: 3x pods with same resources"
 }
@@ -57,8 +57,8 @@ variable "scenario_vertical" {
   })
   default = {
     replicas    = 1
-    cpu_request = "1000m"
-    cpu_limit   = "2000m"
+    cpu_request = "400m"
+    cpu_limit   = "600m"
     mem_request = "512Mi"
     mem_limit   = "1024Mi"
   }
@@ -75,11 +75,11 @@ variable "scenario_hpa" {
     mem_limit   = string
   })
   default = {
-    replicas    = 1 # HPA will manage this
-    cpu_request = "250m"
-    cpu_limit   = "500m"
-    mem_request = "256Mi"
-    mem_limit   = "512Mi"
+    replicas    = 1
+    cpu_request = "100m"
+    cpu_limit   = "150m"
+    mem_request = "128Mi"
+    mem_limit   = "256Mi"
   }
   description = "HPA autoscaling: starts with 1 pod, scales 1-5 based on CPU"
 }
@@ -87,7 +87,7 @@ variable "scenario_hpa" {
 # HPA specific settings
 variable "hpa_enabled" {
   type        = bool
-  default     = false
+  default     = true
   description = "Enable HPA for scenario 4"
 }
 

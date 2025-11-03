@@ -8,3 +8,5 @@ minikube addons enable ingress
 minikube tunnel
 minikube service grafana -n distributed-system --url
 minikube service prometheus -n distributed-system --url
+minikube start --cpus=4 --memory=8192
+minikube dashboard

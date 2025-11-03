@@ -1,0 +1,91 @@
+
+
+test - 1
+replicas    = 1
+cpu_request = "100m"
+cpu_limit   = "150m"
+mem_request = "128Mi"
+mem_limit   = "256Mi"
+opis - baseline
+VUs - 200
+max CPU -  106m
+max Memery - 80.7Mi
+
+test - 2
+replicas    = 1
+cpu_request = "100m"
+cpu_limit   = "150m"
+mem_request = "128Mi"
+mem_limit   = "256Mi"
+opis - baseline
+VUs - 200
+max CPU -  100m
+max Memery - 83.7Mi
+
+test - 3
+replicas    = 3
+cpu_request = "100m"
+cpu_limit   = "150m"
+mem_request = "128Mi"
+mem_limit   = "256Mi"
+opis - horizontal
+VUs - 200
+max CPU z 3 podów - 72m
+max Memery - 82.5Mi
+
+test - 4
+replicas    = 3
+cpu_request = "100m"
+cpu_limit   = "150m"
+mem_request = "128Mi"
+mem_limit   = "256Mi"
+opis - horizontal
+VUs - 200
+max CPU z 3 podów - 81m
+max Memery - 82.85Mi
+
+test - 5
+opis - vertical
+replicas    = 1
+cpu_request = "400m"
+cpu_limit   = "600m"
+mem_request = "512Mi"
+mem_limit   = "1024Mi"
+VUs - 200
+max CPU z 1 podów - 181m
+max Memery - 79.1Mi
+
+test - 6
+opis - vertical
+replicas    = 1
+cpu_request = "400m"
+cpu_limit   = "600m"
+mem_request = "512Mi"
+mem_limit   = "1024Mi"
+VUs - 200
+max CPU z 1 podów - 147m
+max Memery - 84.4Mi
+
+test - 7
+hpa_target_cpu_utilization = 70%
+replicas    = z 1 do 2
+cpu_request = "100m"
+cpu_limit   = "150m"
+mem_request = "128Mi"
+mem_limit   = "256Mi"
+opis - hpa
+VUs - 200
+max CPU -  111m
+max Memery - 83Mi
+
+test - 8
+hpa_target_cpu_utilization = 70%
+replicas    = z 1 do 2
+cpu_request = "100m"
+cpu_limit   = "150m"
+mem_request = "128Mi"
+mem_limit   = "256Mi"
+opis - hpa
+VUs - 200
+max CPU -  116m
+max Memery - 81.2Mi

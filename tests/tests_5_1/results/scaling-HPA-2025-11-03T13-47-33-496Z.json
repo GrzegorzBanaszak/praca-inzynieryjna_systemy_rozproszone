@@ -1,0 +1,45 @@
+{
+  "timestamp": "2025-11-03T13:47:33.496Z",
+  "scenario": "HPA",
+  "duration_seconds": 789.9379179,
+  "metrics": {
+    "total_requests": 84109,
+    "requests_per_second": 106.47545597456374,
+    "failed_requests": 0,
+    "success_rate": 0.9999881091107993,
+    "error_rate": 0,
+    "response_times": {
+      "min": 0.5066,
+      "max": 2408.2523,
+      "avg": 8.204206605714171,
+      "median": 4.154,
+      "p90": 21.556,
+      "p95": 32.69735999999995,
+      "p99": 51.812303999999976
+    }
+  },
+  "thresholds": {
+    "passed": {
+      "http_req_duration": true,
+      "http_req_failed": true,
+      "success_rate": true
+    }
+  },
+  "test_configuration": {
+    "base_url": "http://distributed.local",
+    "stages": [
+      {"duration":"1m0s","target":10},
+      {"duration":"2m0s","target":50},
+      {"duration":"2m0s","target":100},
+      {"duration":"2m0s","target":150},
+      {"duration":"2m0s","target":200},
+      {"duration":"2m0s","target":200},
+      {"duration":"2m0s","target":0}
+    ],
+    "thresholds": {
+      "http_req_duration": ["p(95)<500","p(99)<1000"],
+      "http_req_failed": ["rate<0.01"],
+      "success_rate": ["rate>0.99"]
+    }
+  }
+}
