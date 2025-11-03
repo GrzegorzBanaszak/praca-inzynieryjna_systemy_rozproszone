@@ -4,7 +4,7 @@
 # Scenario selector: "baseline" | "horizontal" | "vertical" | "hpa"
 variable "scaling_scenario" {
   type        = string
-  default     = "hpa"
+  default     = "vertical"
   description = "Which scaling scenario to deploy: baseline, horizontal, vertical, or hpa"
 }
 
@@ -87,7 +87,7 @@ variable "scenario_hpa" {
 # HPA specific settings
 variable "hpa_enabled" {
   type        = bool
-  default     = true
+  default     = false
   description = "Enable HPA for scenario 4"
 }
 

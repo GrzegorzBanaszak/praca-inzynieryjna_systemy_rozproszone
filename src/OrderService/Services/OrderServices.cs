@@ -17,16 +17,19 @@ namespace OrderService.Services
         private readonly IProducer<Null, string> _producer;
         private readonly KafkaSettings _kafka;
 
+
         public OrderServices(
             OrderDbContext db,
             IMapper mapper,
             IOptions<KafkaSettings> kafkaOptions,
-            IProducer<Null, string> producer)
+            IProducer<Null, string> producer
+            )
         {
             _db = db;
             _mapper = mapper;
             _producer = producer;
             _kafka = kafkaOptions.Value;
+
         }
 
 
@@ -49,6 +52,24 @@ namespace OrderService.Services
 
             return orderDto;
 
+        }
+
+        /// <summary>
+        /// Synchroniczne tworzenie zamówienia - NIE publikuje do Kafki
+        /// Notyfikacja będzie wysłana bezpośrednio przez HTTP
+        /// </summary>
+        public async Task<OrderDto> CreateSyncAsync(Guid userId, CreateOrderDto dto)
+        {
+            var order = _mapper.Map<Order>(dto);
+            order.Id = Guid.NewGuid();
+            order.UserId = userId;
+
+            _db.Orders.Add(order);
+            await _db.SaveChangesAsync();
+
+            var orderDto = _mapper.Map<OrderDto>(order);
+
+            return orderDto;
         }
 
         public async Task<IEnumerable<OrderDto>> GetByUserAsync(Guid userId)

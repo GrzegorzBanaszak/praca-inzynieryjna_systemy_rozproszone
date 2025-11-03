@@ -27,6 +27,17 @@ builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 
+
+// Dodaj HttpClient dla NotificationService (do wywołań synchronicznych)
+builder.Services.AddHttpClient("NotificationService", client =>
+{
+    // W środowisku Kubernetes serwis będzie dostępny pod tą nazwą
+    var baseUrl = builder.Configuration.GetValue<string>("NotificationService:BaseUrl")
+                  ?? "http://notificationservice";
+    client.BaseAddress = new Uri(baseUrl);
+    client.Timeout = TimeSpan.FromSeconds(30); // Timeout dla żądań synchronicznych
+});
+
 var app = builder.Build();
 
 

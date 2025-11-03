@@ -111,7 +111,14 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddHealthChecks();
 
 
-
+builder.Services.AddHttpClient("NotificationService", client =>
+{
+    // W środowisku Kubernetes serwis będzie dostępny pod tą nazwą
+    var baseUrl = builder.Configuration.GetValue<string>("NotificationService:BaseUrl")
+                  ?? "http://notificationservice";
+    client.BaseAddress = new Uri(baseUrl);
+    client.Timeout = TimeSpan.FromSeconds(30); // Timeout dla żądań synchronicznych
+});
 
 var app = builder.Build();
 using (var scope = app.Services.CreateScope())
