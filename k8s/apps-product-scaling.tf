@@ -86,6 +86,10 @@ resource "kubernetes_deployment_v1" "product_scaling" {
               memory = local.selected_config.mem_limit
             }
           }
+          env {
+            name  = "ASPNETCORE_HTTP_PROTOCOLS"
+            value = "Http1AndHttp2"
+          }
 
           env_from {
             config_map_ref {

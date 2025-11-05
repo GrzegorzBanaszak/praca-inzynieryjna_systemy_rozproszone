@@ -1,3 +1,4 @@
+using ProductService.GrpcService;
 using ProductService.Services;
 using ProductService.Settings;
 using Prometheus;
@@ -9,6 +10,7 @@ builder.Services.AddHealthChecks();
 // Add services to the container.
 
 builder.Services.AddControllers();
+builder.Services.AddGrpc();
 builder.Services.Configure<MongoDbSettings>(
     builder.Configuration.GetSection("MongoDbSettings"));
 
@@ -37,6 +39,7 @@ app.UseMetricServer();
 app.UseHttpMetrics();
 
 app.MapControllers();
+app.MapGrpcService<ProductGrpcService>();
 app.MapMetrics();
 app.MapHealthChecks("/healthz");
 app.Run();

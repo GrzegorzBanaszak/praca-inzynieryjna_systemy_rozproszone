@@ -36,6 +36,10 @@ resource "kubernetes_deployment_v1" "apigateway" {
             name  = "ASPNETCORE_URLS"
             value = "http://+:80"
           }
+          env {
+            name  = "ASPNETCORE_HTTP_PROTOCOLS"
+            value = "Http1AndHttp2"
+          }
           port { container_port = 80 }
           readiness_probe {
             http_get {

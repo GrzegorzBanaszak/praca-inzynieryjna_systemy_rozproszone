@@ -37,6 +37,10 @@ resource "kubernetes_deployment_v1" "user" {
             value = "http://+:80"
           }
           env {
+            name  = "ASPNETCORE_HTTP_PROTOCOLS"
+            value = "Http1AndHttp2"
+          }
+          env {
             name = "JwtSettings__Key"
             value_from {
               secret_key_ref {

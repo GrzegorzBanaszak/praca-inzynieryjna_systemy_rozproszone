@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OrderService.Common;
 using OrderService.Data;
+using OrderService.GrpcService;
 using OrderService.Profiles;
 using OrderService.Services;
 using OrderService.Settings;
@@ -75,6 +76,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // Swagger, HealthChecks, Prometheus
 builder.Services.AddControllers();
+builder.Services.AddGrpc();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -141,6 +143,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+app.MapGrpcService<OrderGrpcService>();
 app.MapHealthChecks("/healthz");
 app.MapMetrics();
 

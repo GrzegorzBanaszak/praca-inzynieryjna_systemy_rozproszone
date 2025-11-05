@@ -17,11 +17,11 @@ public class NotificationServices : INotificationService
         _smtp = smtpOptions.Value;
         _logger = logger;
     }
-    public Task NotifyAsync(OrderDto order)
+    public async Task NotifyAsync(OrderDto order)
     {
-        // tu możesz zbudować prawdziwego maila; na razie logujemy
+        await Task.Delay(200); // Symulacja wysyłki email
         _logger.LogInformation("NOTIFY: Zamówienie {OrderId} złożone przez {UserId}, produkt {ProductId}, ilość {Quantity}",
             order.Id, order.UserId, order.ProductId, order.Quantity);
-        return Task.CompletedTask;
+
     }
 }

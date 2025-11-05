@@ -1,0 +1,55 @@
+syntax = "proto3";
+
+option csharp_namespace = "GrpcServices.Order";
+
+package order;
+
+import "google/protobuf/timestamp.proto";  // Import typu timestamp
+
+// Serwis obsługujący zamówienia
+service OrderService {
+  // Utworzenie zamówienia (wersja asynchroniczna z Kafka)
+  // W REST: POST /api/order
+  rpc Create (CreateOrderRequest) returns (OrderResponse);
+  
+  // Utworzenie zamówienia (wersja synchroniczna bez Kafka)
+  // W REST: POST /api/order/sync
+  rpc CreateSync (CreateOrderRequest) returns (OrderResponse);
+  
+  // Pobranie zamówień użytkownika
+  // W REST: GET /api/order
+  rpc GetByUser (GetOrdersByUserRequest) returns (OrderList);
+}
+
+// Żądanie utworzenia zamówienia
+message CreateOrderRequest {
+  string product_id = 1;
+  int32 quantity = 2;
+  // user_id wyciągniemy z JWT w metadanych
+}
+
+// Odpowiedź z zamówieniem
+message OrderResponse {
+  OrderDto order = 1;
+  bool success = 2;
+  string message = 3;
+}
+
+// Żądanie zamówień użytkownika
+message GetOrdersByUserRequest {
+  // user_id wyciągniemy z JWT w metadanych
+}
+
+// Lista zamówień
+message OrderList {
+  repeated OrderDto orders = 1;
+}
+
+// DTO zamówienia
+message OrderDto {
+  string id = 1;                                    // GUID jako string
+  string user_id = 2;                               // GUID jako string
+  string product_id = 3;
+  int32 quantity = 4;
+  google.protobuf.Timestamp created_at = 5;         // DateTime
+}

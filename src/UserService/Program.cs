@@ -5,6 +5,7 @@ using Microsoft.OpenApi.Models;
 using Prometheus;
 using System.Text;
 using UserService.Data;
+using UserService.GrpcService;
 using UserService.Services;
 using UserService.Settings;
 
@@ -52,6 +53,7 @@ AddJwtBearer(o =>
 
 // AutoMapper, Controllers, Swagger, HealthChecks
 builder.Services.AddControllers();
+builder.Services.AddGrpc();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -109,5 +111,15 @@ app.UseHttpMetrics();
 app.MapHealthChecks("/healthz");
 app.MapMetrics();
 app.MapControllers();
+app.MapGrpcService<UserGrpcService>();
+
+// UserService/Program.cs
+// Dodaj po builder.Services.AddControllers():
+
+// ...
+
+// W sekcji app (po app.MapControllers()):
+
+
 
 app.Run();

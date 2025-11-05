@@ -60,6 +60,10 @@ resource "kubernetes_deployment_v1" "order" {
             value = "1"
           }
           env {
+            name  = "ASPNETCORE_HTTP_PROTOCOLS"
+            value = "Http1AndHttp2"
+          }
+          env {
             name  = "ASPNETCORE_URLS"
             value = "http://+:80"
           }
