@@ -1,8 +1,29 @@
-# apps-order.tf
+locals {
+  # Select configuration based on scaling_scenario variable
+  selected_scenario = (
+    var.scaling_type == "small" ? var.scenario_small :
+    var.scaling_type == "medium" ? var.scenario_medium :
+    var.scaling_type == "large" ? var.scenario_large :
+    var.scenario_small # fallback to baseline
+  )
+}
+
+
 resource "kubernetes_service_v1" "order" {
   metadata {
     name      = "orderservice"
     namespace = var.namespace
+    annotations = {
+      "scaling-test/scenario"    = var.scaling_type
+      "scaling-test/replicas"    = tostring(local.selected_scenario.replicas)
+      "scaling-test/cpu-request" = local.selected_scenario.cpu_request
+      "scaling-test/cpu-limit"   = local.selected_scenario.cpu_limit
+      "scaling-test/mem-request" = local.selected_scenario.mem_request
+      "scaling-test/mem-limit"   = local.selected_scenario.mem_limit
+      "prometheus.io/scrape"     = "true"
+      "prometheus.io/port"       = "80"       # <-- port, na którym /metrics słucha
+      "prometheus.io/path"       = "/metrics" # <-- ścieżka metryk
+    }
   }
   spec {
     selector = { app = "orderservice" }
@@ -11,6 +32,7 @@ resource "kubernetes_service_v1" "order" {
       target_port = 80
     }
   }
+
   depends_on = [kubernetes_deployment_v1.redpanda, kubernetes_deployment_v1.postgres_order]
 }
 
@@ -29,6 +51,18 @@ resource "kubernetes_deployment_v1" "order" {
           name              = "orderservice"
           image             = var.image_orderservice
           image_pull_policy = "IfNotPresent"
+
+          resources {
+            requests = {
+              cpu    = local.selected_scenario.cpu_request
+              memory = local.selected_scenario.mem_request
+            }
+            limits = {
+              cpu    = local.selected_scenario.cpu_limit
+              memory = local.selected_scenario.mem_limit
+            }
+          }
+
           env_from {
             config_map_ref {
               name = kubernetes_config_map_v1.order_cfg.metadata[0].name
@@ -81,4 +115,18 @@ resource "kubernetes_deployment_v1" "order" {
     }
   }
   depends_on = [kubernetes_service_v1.order]
+}
+
+
+# Output current scenario configuration
+output "scaling_scenario_deployed" {
+  value = {
+    scenario    = var.scaling_type
+    replicas    = local.selected_scenario.replicas
+    cpu_request = local.selected_scenario.cpu_request
+    cpu_limit   = local.selected_scenario.cpu_limit
+    mem_request = local.selected_scenario.mem_request
+    mem_limit   = local.selected_scenario.mem_limit
+  }
+  description = "Currently deployed scenario configuration"
 }

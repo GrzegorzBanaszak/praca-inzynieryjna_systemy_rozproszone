@@ -48,12 +48,12 @@ resource "kubernetes_deployment_v1" "apigateway" {
           }
           resources {
             requests = {
-              cpu    = "500m" # 0.5 CPU core
-              memory = "512Mi"
+              cpu    = local.selected_scenario.cpu_request
+              memory = local.selected_scenario.mem_request
             }
             limits = {
-              cpu    = "1000m" # 1 CPU core
-              memory = "1Gi"
+              cpu    = local.selected_scenario.cpu_limit
+              memory = local.selected_scenario.mem_limit
             }
           }
         }

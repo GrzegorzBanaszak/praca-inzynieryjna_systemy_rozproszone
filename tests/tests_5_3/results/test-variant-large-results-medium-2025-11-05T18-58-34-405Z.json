@@ -1,0 +1,150 @@
+{
+  "timestamp": "2025-11-05T18:58:34.406Z",
+  "scenario": "medium",
+  "configuration": {
+    "executor": "ramping-vus",
+    "startVUs": 5,
+    "stages": [
+      {
+        "duration": "2m",
+        "target": 20
+      },
+      {
+        "duration": "5m",
+        "target": 20
+      },
+      {
+        "duration": "2m",
+        "target": 40
+      },
+      {
+        "duration": "5m",
+        "target": 40
+      },
+      {
+        "duration": "1m",
+        "target": 0
+      }
+    ],
+    "gracefulRampDown": "30s"
+  },
+  "metrics": {
+    "http_reqs": {
+      "type": "counter",
+      "contains": "default",
+      "values": {
+        "count": 13786,
+        "rate": 15.234696290871982
+      }
+    },
+    "http_req_duration": {
+      "type": "trend",
+      "contains": "time",
+      "values": {
+        "p(95)": 47.399424999999994,
+        "p(99)": 56.96207499999996,
+        "min": 1.5809,
+        "avg": 14.581466183084247,
+        "med": 7.65715,
+        "max": 757.6427,
+        "p(90)": 39.97605
+      },
+      "thresholds": {
+        "p(95)<1000": {
+          "ok": true
+        },
+        "p(99)<2000": {
+          "ok": true
+        }
+      }
+    },
+    "http_req_failed": {
+      "type": "rate",
+      "contains": "default",
+      "values": {
+        "rate": 0,
+        "passes": 0,
+        "fails": 13786
+      },
+      "thresholds": {
+        "rate<0.05": {
+          "ok": true
+        }
+      }
+    },
+    "registration_duration": {
+      "type": "trend",
+      "contains": "default",
+      "values": {
+        "avg": 18.58676726639582,
+        "med": 8,
+        "max": 757,
+        "p(90)": 42,
+        "p(95)": 48,
+        "p(99)": 66,
+        "min": 4
+      }
+    },
+    "login_duration": {
+      "type": "trend",
+      "contains": "default",
+      "values": {
+        "med": 4,
+        "max": 81,
+        "p(90)": 36,
+        "p(95)": 47,
+        "p(99)": 57.100000000000364,
+        "min": 1,
+        "avg": 13.277132907719094
+      }
+    },
+    "product_list_duration": {
+      "type": "trend",
+      "contains": "default",
+      "values": {
+        "p(99)": 49,
+        "min": 2,
+        "avg": 7.678467788740568,
+        "med": 4,
+        "max": 55,
+        "p(90)": 20,
+        "p(95)": 46
+      }
+    },
+    "order_duration": {
+      "values": {
+        "p(90)": 45,
+        "p(95)": 50,
+        "p(99)": 57,
+        "min": 7,
+        "avg": 18.86099825885084,
+        "med": 13,
+        "max": 514
+      },
+      "type": "trend",
+      "contains": "default"
+    },
+    "end_to_end_duration": {
+      "type": "trend",
+      "contains": "default",
+      "values": {
+        "p(90)": 6095,
+        "p(95)": 6108,
+        "p(99)": 6139,
+        "min": 6021,
+        "avg": 6059.751305861869,
+        "med": 6056,
+        "max": 6777
+      }
+    }
+  },
+  "thresholds": {
+    "contains": "default",
+    "values": {
+      "rate": 1,
+      "passes": 37906,
+      "fails": 0
+    },
+    "type": "rate"
+  }
+}

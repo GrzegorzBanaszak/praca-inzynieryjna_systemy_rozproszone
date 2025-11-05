@@ -31,12 +31,12 @@ resource "kubernetes_deployment_v1" "user" {
           image_pull_policy = "Never"
           resources {
             requests = {
-              memory = "64Mi"
-              cpu    = "250m"
+              cpu    = local.selected_scenario.cpu_request
+              memory = local.selected_scenario.mem_request
             }
             limits = {
-              memory = "128Mi"
-              cpu    = "500m"
+              cpu    = local.selected_scenario.cpu_limit
+              memory = local.selected_scenario.mem_limit
             }
           }
           env_from {

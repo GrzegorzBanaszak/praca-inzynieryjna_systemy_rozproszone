@@ -46,6 +46,17 @@ resource "kubernetes_deployment_v1" "notification" {
             value = "http://+:80"
           }
 
+          resources {
+            requests = {
+              cpu    = local.selected_scenario.cpu_request
+              memory = local.selected_scenario.mem_request
+            }
+            limits = {
+              cpu    = local.selected_scenario.cpu_limit
+              memory = local.selected_scenario.mem_limit
+            }
+          }
+
           port {
             container_port = 80
           }

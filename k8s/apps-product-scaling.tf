@@ -149,16 +149,3 @@ resource "kubernetes_deployment_v1" "product_scaling" {
   }
 }
 
-# Output current scenario configuration
-output "scaling_scenario_deployed" {
-  value = {
-    scenario    = var.scaling_scenario
-    replicas    = local.selected_config.replicas
-    cpu_request = local.selected_config.cpu_request
-    cpu_limit   = local.selected_config.cpu_limit
-    mem_request = local.selected_config.mem_request
-    mem_limit   = local.selected_config.mem_limit
-    hpa_enabled = var.hpa_enabled
-  }
-  description = "Currently deployed scaling scenario configuration"
-}
