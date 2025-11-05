@@ -1,5 +1,6 @@
 using Confluent.Kafka;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -14,6 +15,14 @@ using Prometheus;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(80, listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http2;
+    });
+});
+
 
 // EF Core
 builder.Services.AddDbContext<OrderDbContext>(opts =>
@@ -77,6 +86,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 // Swagger, HealthChecks, Prometheus
 builder.Services.AddControllers();
 builder.Services.AddGrpc();
+builder.Services.AddGrpcReflection();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -141,9 +151,9 @@ app.UseMetricServer();
 app.UseHttpMetrics();
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 app.MapGrpcService<OrderGrpcService>();
+app.MapGrpcReflectionService();
 app.MapHealthChecks("/healthz");
 app.MapMetrics();
 

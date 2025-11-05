@@ -38,17 +38,21 @@ resource "kubernetes_deployment_v1" "apigateway" {
           }
           env {
             name  = "ASPNETCORE_HTTP_PROTOCOLS"
-            value = "Http1AndHttp2"
+            value = "Http2"
+          }
+          env {
+            name  = "AppContext__System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport"
+            value = "true"
           }
           port { container_port = 80 }
-          readiness_probe {
-            http_get {
-              path = "/healthz"
-              port = 80
-            }
-            initial_delay_seconds = 10
-            period_seconds        = 10
-          }
+          # readiness_probe {
+          #   http_get {
+          #     path = "/healthz"
+          #     port = 80
+          #   }
+          #   initial_delay_seconds = 10
+          #   period_seconds        = 10
+          # }
           resources {
             requests = {
               cpu    = "500m" # 0.5 CPU core

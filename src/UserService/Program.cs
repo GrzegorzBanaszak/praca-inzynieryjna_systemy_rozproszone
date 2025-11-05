@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -10,6 +11,14 @@ using UserService.Services;
 using UserService.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(80, listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http2;
+    });
+});
 
 
 builder.Services.AddHealthChecks(); //  endpoint /healthz
@@ -54,6 +63,7 @@ AddJwtBearer(o =>
 // AutoMapper, Controllers, Swagger, HealthChecks
 builder.Services.AddControllers();
 builder.Services.AddGrpc();
+builder.Services.AddGrpcReflection();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -112,14 +122,6 @@ app.MapHealthChecks("/healthz");
 app.MapMetrics();
 app.MapControllers();
 app.MapGrpcService<UserGrpcService>();
-
-// UserService/Program.cs
-// Dodaj po builder.Services.AddControllers():
-
-// ...
-
-// W sekcji app (po app.MapControllers()):
-
-
+app.MapGrpcReflectionService();
 
 app.Run();

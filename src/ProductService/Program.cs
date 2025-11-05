@@ -1,9 +1,18 @@
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using ProductService.GrpcService;
 using ProductService.Services;
 using ProductService.Settings;
 using Prometheus;
 
 var builder = WebApplication.CreateBuilder(args);
+builder.WebHost.ConfigureKestrel(options =>
+{
+    options.ListenAnyIP(80, listenOptions =>
+    {
+        listenOptions.Protocols = HttpProtocols.Http2;
+    });
+});
+
 builder.Services.AddAutoMapper(typeof(Program));
 
 builder.Services.AddHealthChecks();
@@ -11,6 +20,7 @@ builder.Services.AddHealthChecks();
 
 builder.Services.AddControllers();
 builder.Services.AddGrpc();
+builder.Services.AddGrpcReflection();
 builder.Services.Configure<MongoDbSettings>(
     builder.Configuration.GetSection("MongoDbSettings"));
 
@@ -40,6 +50,7 @@ app.UseHttpMetrics();
 
 app.MapControllers();
 app.MapGrpcService<ProductGrpcService>();
+app.MapGrpcReflectionService();
 app.MapMetrics();
 app.MapHealthChecks("/healthz");
 app.Run();

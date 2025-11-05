@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.IdentityModel.Tokens;
 using Prometheus;
 using System.Text;
@@ -7,9 +8,9 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.WebHost.ConfigureKestrel(options =>
 {
-    options.ConfigureEndpointDefaults(listenOptions =>
+    options.ListenAnyIP(80, listenOptions =>
     {
-        listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
+        listenOptions.Protocols = HttpProtocols.Http2;
     });
 });
 
@@ -52,6 +53,7 @@ builder.Services.AddAuthorization(options =>
 });
 
 builder.Services.AddControllers();
+
 builder.Services.AddReverseProxy()
        .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
@@ -69,7 +71,6 @@ app.MapReverseProxy();
 app.MapControllers();
 app.UseRouting();
 app.UseAuthorization();
-
 // Rejestruje metryki Prometheus
 app.UseMetricServer();
 // Zbiera metryki HTTP (latencja, liczba zapytań, kody statusu)
