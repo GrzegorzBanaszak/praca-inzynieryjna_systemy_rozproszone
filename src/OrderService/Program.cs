@@ -7,7 +7,6 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using OrderService.Common;
 using OrderService.Data;
-using OrderService.GrpcService;
 using OrderService.Profiles;
 using OrderService.Services;
 using OrderService.Settings;
@@ -15,13 +14,6 @@ using Prometheus;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(80, listenOptions =>
-    {
-        listenOptions.Protocols = HttpProtocols.Http2;
-    });
-});
 
 
 // EF Core
@@ -85,8 +77,6 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
 // Swagger, HealthChecks, Prometheus
 builder.Services.AddControllers();
-builder.Services.AddGrpc();
-builder.Services.AddGrpcReflection();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -152,8 +142,6 @@ app.UseHttpMetrics();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-app.MapGrpcService<OrderGrpcService>();
-app.MapGrpcReflectionService();
 app.MapHealthChecks("/healthz");
 app.MapMetrics();
 

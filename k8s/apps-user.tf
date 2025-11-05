@@ -29,6 +29,16 @@ resource "kubernetes_deployment_v1" "user" {
           name              = "userservice"
           image             = var.image_userservice
           image_pull_policy = "Never"
+          resources {
+            requests = {
+              memory = "64Mi"
+              cpu    = "250m"
+            }
+            limits = {
+              memory = "128Mi"
+              cpu    = "500m"
+            }
+          }
           env_from {
             config_map_ref { name = kubernetes_config_map_v1.user_cfg.metadata[0].name }
           }
@@ -36,14 +46,7 @@ resource "kubernetes_deployment_v1" "user" {
             name  = "ASPNETCORE_URLS"
             value = "http://+:80"
           }
-          env {
-            name  = "ASPNETCORE_HTTP_PROTOCOLS"
-            value = "Http2"
-          }
-          env {
-            name  = "AppContext__System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport"
-            value = "true"
-          }
+
           env {
             name = "JwtSettings__Key"
             value_from {
@@ -81,14 +84,14 @@ resource "kubernetes_deployment_v1" "user" {
             }
           }
           port { container_port = 80 }
-          # readiness_probe {
-          #   http_get {
-          #     path = "/healthz"
-          #     port = 80
-          #   }
-          #   initial_delay_seconds = 10
-          #   period_seconds        = 10
-          # }
+          readiness_probe {
+            http_get {
+              path = "/healthz"
+              port = 80
+            }
+            initial_delay_seconds = 10
+            period_seconds        = 10
+          }
         }
       }
     }

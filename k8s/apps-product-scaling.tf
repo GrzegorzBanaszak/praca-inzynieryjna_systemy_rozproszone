@@ -102,10 +102,7 @@ resource "kubernetes_deployment_v1" "product_scaling" {
             name  = "ASPNETCORE_URLS"
             value = "http://+:80"
           }
-          env {
-            name  = "AppContext__System.Net.Http.SocketsHttpHandler.Http2UnencryptedSupport"
-            value = "true"
-          }
+
 
           # Add environment variable to identify which scenario is running
           env {
@@ -118,28 +115,28 @@ resource "kubernetes_deployment_v1" "product_scaling" {
           }
 
           # Readiness probe - critical for HPA and rolling updates
-          # readiness_probe {
-          #   http_get {
-          #     path = "/healthz"
-          #     port = 80
-          #   }
-          #   initial_delay_seconds = 10
-          #   period_seconds        = 10
-          #   timeout_seconds       = 5
-          #   failure_threshold     = 3
-          # }
+          readiness_probe {
+            http_get {
+              path = "/healthz"
+              port = 80
+            }
+            initial_delay_seconds = 10
+            period_seconds        = 10
+            timeout_seconds       = 5
+            failure_threshold     = 3
+          }
 
           # Liveness probe - restart unhealthy pods
-          # liveness_probe {
-          #   http_get {
-          #     path = "/healthz"
-          #     port = 80
-          #   }
-          #   initial_delay_seconds = 30
-          #   period_seconds        = 20
-          #   timeout_seconds       = 5
-          #   failure_threshold     = 3
-          # }
+          liveness_probe {
+            http_get {
+              path = "/healthz"
+              port = 80
+            }
+            initial_delay_seconds = 30
+            period_seconds        = 20
+            timeout_seconds       = 5
+            failure_threshold     = 3
+          }
         }
       }
     }

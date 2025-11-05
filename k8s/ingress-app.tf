@@ -7,7 +7,6 @@ resource "kubernetes_ingress_v1" "ing" {
       # Jeśli używasz starszych manifestów/classic:
       "kubernetes.io/ingress.class" = "nginx"
       # (opcjonalnie) przykładowe tuningi NGINX:
-      "nginx.ingress.kubernetes.io/backend-protocol"   = "GRPC"
       "nginx.ingress.kubernetes.io/proxy-read-timeout" = "60"
       "nginx.ingress.kubernetes.io/proxy-send-timeout" = "60"
     }

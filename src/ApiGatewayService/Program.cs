@@ -6,13 +6,6 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(80, listenOptions =>
-    {
-        listenOptions.Protocols = HttpProtocols.Http2;
-    });
-});
 
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
     .AddJwtBearer(options =>

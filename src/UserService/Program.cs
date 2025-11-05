@@ -6,19 +6,11 @@ using Microsoft.OpenApi.Models;
 using Prometheus;
 using System.Text;
 using UserService.Data;
-using UserService.GrpcService;
 using UserService.Services;
 using UserService.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
-builder.WebHost.ConfigureKestrel(options =>
-{
-    options.ListenAnyIP(80, listenOptions =>
-    {
-        listenOptions.Protocols = HttpProtocols.Http2;
-    });
-});
 
 
 builder.Services.AddHealthChecks(); //  endpoint /healthz
@@ -62,8 +54,6 @@ AddJwtBearer(o =>
 
 // AutoMapper, Controllers, Swagger, HealthChecks
 builder.Services.AddControllers();
-builder.Services.AddGrpc();
-builder.Services.AddGrpcReflection();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(c =>
 {
@@ -121,7 +111,5 @@ app.UseHttpMetrics();
 app.MapHealthChecks("/healthz");
 app.MapMetrics();
 app.MapControllers();
-app.MapGrpcService<UserGrpcService>();
-app.MapGrpcReflectionService();
 
 app.Run();
